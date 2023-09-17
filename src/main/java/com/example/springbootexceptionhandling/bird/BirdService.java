@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BirdService {
@@ -14,15 +15,11 @@ public class BirdService {
     private BirdRepository birdRepository;
 
     public Bird getBirdNoException(Long birdId) {
-        return birdRepository.findOne(birdId);
+        return birdRepository.findById(birdId).get();
     }
 
     public Bird getBird(Long birdId) {
-        Bird bird = birdRepository.findOne(birdId);
-        if (bird == null) {
-            throw new EntityNotFoundException(Bird.class, "id", birdId.toString());
-        }
-        return bird;
+        return birdRepository.findById(birdId).get();
     }
 
     public Bird createBird(Bird bird) {
@@ -33,11 +30,11 @@ public class BirdService {
         List<Bird> birds = new ArrayList<>();
 
         for (Long birdId : birdCollection.getBirdsIds()) {
-            Bird bird = birdRepository.findOne(birdId);
-            if (bird == null) {
+            Optional<Bird> bird = birdRepository.findById(birdId);
+            if (bird.isEmpty()) {
                 throw new EntityNotFoundException(Bird.class, "id", birdId.toString());
             }
-            birds.add(bird);
+            birds.add(bird.get());
         }
         return birds;
     }
